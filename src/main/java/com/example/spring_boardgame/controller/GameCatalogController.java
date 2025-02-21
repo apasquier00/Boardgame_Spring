@@ -1,10 +1,8 @@
-package com.example.spring_boardgame;
+package com.example.spring_boardgame.controller;
 
-import fr.le_campus_numerique.square_games.engine.Game;
-import fr.le_campus_numerique.square_games.engine.GameFactory;
+import com.example.spring_boardgame.service.catalog.GameCatalog;
+import com.example.spring_boardgame.service.catalog.GameCatalogImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,7 +13,7 @@ public class GameCatalogController {
     @Autowired
     GameCatalog gameCatalog;
 
-    @GetMapping("/users")
+    @GetMapping("/catalog")
     public String getGameCatalog() {
         return gameCatalogimpl.getGameIdentifiers().toString();
     }
