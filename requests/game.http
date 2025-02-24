@@ -1,8 +1,8 @@
 ###
 @url=http://localhost:8081
 @game=ticTacToe
-@user_id=38e17701-1814-4e00-b167-6ba8cae6699a
-@game_id=d396e8b8-f4f4-4cb4-8ce2-87618ce7ccdb
+@user_id=c5f66c55-406e-43c5-9655-b7c5a91e90d7
+@game_id=74f73279-eed6-4f08-8e1d-001496adccaf
 
 ### GET request to example server
 GET https://examples.http-client.intellij.net/get

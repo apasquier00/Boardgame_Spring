@@ -1,11 +1,9 @@
 package com.example.spring_boardgame.controller;
 
-import com.example.spring_boardgame.data.repository.GameEntity;
 import com.example.spring_boardgame.service.GameFactoryServiceImpl;
 import com.example.spring_boardgame.service.GameServiceImpl;
 import fr.le_campus_numerique.square_games.engine.CellPosition;
 import fr.le_campus_numerique.square_games.engine.Game;
-import fr.le_campus_numerique.square_games.engine.GameFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
@@ -13,7 +11,6 @@ import org.springframework.core.ParameterizedTypeReference;
 
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.List;
 
@@ -83,7 +80,8 @@ public class GameController {
                 game.getFactoryId(),
                 game.getBoardSize(),
                 game.getPlayerIds().size(),
-                game.getStatus().name()
+                game.getStatus().name(),
+                game.getCurrentPlayerId()
         );
 
     }
@@ -100,7 +98,7 @@ public class GameController {
 
             return ids.contains(userId.toString());
         }catch (Exception e){
-            System.err.println(e.toString());
+            System.err.println(e.getMessage() );
             return true;
         }
     }

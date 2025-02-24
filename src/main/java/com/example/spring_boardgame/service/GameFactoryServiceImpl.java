@@ -1,14 +1,10 @@
 package com.example.spring_boardgame.service;
 
-import com.example.spring_boardgame.data.repository.GameDao;
-import com.example.spring_boardgame.data.repository.GameEntity;
-import com.example.spring_boardgame.data.repository.JpaGameDao;
+import com.example.spring_boardgame.data.repository.dao.GameDao;
+import com.example.spring_boardgame.data.repository.dao.JpaGameDao;
 import com.example.spring_boardgame.service.catalog.GameCatalog;
 import fr.le_campus_numerique.square_games.engine.Game;
 import fr.le_campus_numerique.square_games.engine.GameFactory;
-import fr.le_campus_numerique.square_games.engine.connectfour.ConnectFourGameFactory;
-import fr.le_campus_numerique.square_games.engine.taquin.TaquinGameFactory;
-import fr.le_campus_numerique.square_games.engine.tictactoe.TicTacToeGameFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;

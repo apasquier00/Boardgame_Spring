@@ -1,12 +1,11 @@
 package com.example.spring_boardgame.service;
 
-import com.example.spring_boardgame.data.repository.GameDao;
+import com.example.spring_boardgame.data.repository.dao.GameDao;
 import fr.le_campus_numerique.square_games.engine.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -19,7 +18,7 @@ public class GameServiceImpl implements GameService {
 
 
     public CellPosition play(UUID playerId, int x, int y, UUID gameId) throws Exception {
-        if(!hasPlayer(gameDao.getGameById(gameId), playerId)) {
+        if(!isCurrentPlayer(gameDao.getGameById(gameId), playerId)) {
             throw new Exception("Cet Utilisateur n'a pas les droits");
         }
         CellPosition cellPosition = new CellPosition(x, y);
@@ -70,6 +69,10 @@ public class GameServiceImpl implements GameService {
     boolean hasPlayer(Game game, UUID playerId) {
         Set<UUID> players = game.getPlayerIds();
         return players.contains(playerId);
+    }
+
+    boolean isCurrentPlayer(Game game, UUID playerId) {
+        return game.getCurrentPlayerId().equals(playerId);
     }
 
 

@@ -1,9 +1,7 @@
 package com.example.spring_boardgame.data.repository;
 
-import fr.le_campus_numerique.square_games.engine.CellPosition;
+import com.example.spring_boardgame.data.repository.dao.GameDao;
 import fr.le_campus_numerique.square_games.engine.Game;
-import fr.le_campus_numerique.square_games.engine.GameStatus;
-import fr.le_campus_numerique.square_games.engine.Token;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
