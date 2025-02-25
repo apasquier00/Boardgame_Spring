@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 @Service
 public class GameFactoryServiceImpl implements GameFactoryService {
-    @Qualifier("inMemoryGameDao")
+    @Qualifier("jpaGameDao")
     @Autowired
     GameDao gameDao;
     @Autowired
@@ -32,7 +32,7 @@ public class GameFactoryServiceImpl implements GameFactoryService {
             return null;
         }
 
-        return gameDao.save(factory.createGame(boardSize, users));
+        return gameDao.upsert(factory.createGame(boardSize, users));
     }
 
 

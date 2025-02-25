@@ -1,27 +1,24 @@
 package com.example.spring_boardgame.data.repository.entity;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
 import java.util.*;
 @Entity
 public class GameEntity {
     @Id
-    private String id;
+    private UUID id;
     private @NotNull String factoryId;
     private @Positive int boardSize;
-    private @NotNull String playerIds;
+    private  String playerIds;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TokenEntity> tokens;
+    private List<GameTokenEntity> tokens;
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -49,11 +46,11 @@ public class GameEntity {
         this.playerIds = playerIds;
     }
 
-    public List<TokenEntity> getTokens() {
+    public List<GameTokenEntity> getTokens() {
         return tokens;
     }
 
-    public void setTokens(List<TokenEntity> tokens) {
+    public void setTokens(List<GameTokenEntity> tokens) {
         this.tokens = tokens;
     }
 

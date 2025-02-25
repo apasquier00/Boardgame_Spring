@@ -4,5 +4,5 @@ import java.util.Locale;
 
 public interface GamePlugin {
 
-    void newGame();
+    String getName(Locale language);
 }

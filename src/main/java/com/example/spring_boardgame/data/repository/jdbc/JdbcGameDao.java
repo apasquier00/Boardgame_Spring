@@ -21,7 +21,7 @@ public class JdbcGameDao implements GameDao {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Override
-    public Game save(Game game) {
+    public Game upsert(Game game) {
         String saveGame = "INSERT INTO game (id, board_size, current_player_id, status, created_at) " +
                 "VALUES (:id, :boardSize, :currentPlayerId, :status, :createdAt)";
 

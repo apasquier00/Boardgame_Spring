@@ -6,9 +6,11 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 public interface GameDao {
-    Game save(Game game);
+    Game upsert(Game game);
 
-    Game getGameById(UUID id);
+    Game getGameById(UUID id) throws Exception;
+
+
     Stream<Game> getGames();
     Game updateGame(Game game);
 

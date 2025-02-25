@@ -1,33 +1,36 @@
 package com.example.spring_boardgame.service;
 
 import com.example.spring_boardgame.data.repository.dao.GameDao;
+import com.example.spring_boardgame.data.repository.dao.JpaGameDao;
 import fr.le_campus_numerique.square_games.engine.*;
+import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 @Service
 public class GameServiceImpl implements GameService {
-    @Qualifier("inMemoryGameDao")
+
+    @Qualifier("jpaGameDao")
     @Autowired
     GameDao gameDao;
 
 
     public CellPosition play(UUID playerId, int x, int y, UUID gameId) throws Exception {
-        if(!isCurrentPlayer(gameDao.getGameById(gameId), playerId)) {
+        if(!isCurrentPlayer(getGameById(gameId), playerId)) {
             throw new Exception("Cet Utilisateur n'a pas les droits");
         }
         CellPosition cellPosition = new CellPosition(x, y);
-        Game game = gameDao.getGameById(gameId);
-        Token token = getCurrentPlayerToken(gameId);
-
-
-        token.moveTo(cellPosition);
-        gameDao.updateGame(game);
+        Game game = getGameById(gameId);
+        // Déplacer le jeton
+        getCurrentPlayerToken(game).moveTo(cellPosition);
+        // Mettre a jour la BDD
+        gameDao.upsert(game);
         return (cellPosition);
     }
 
@@ -39,7 +42,13 @@ public class GameServiceImpl implements GameService {
     }
 
     public Game getGameById(UUID gameId) {
-        return gameDao.getGameById(gameId);
+        try{
+            return gameDao.getGameById(gameId);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 
     public Stream<Game> getGamesByPlayerId(UUID playerId) {
@@ -47,7 +56,7 @@ public class GameServiceImpl implements GameService {
     }
 
     public GameStatus getGameStatus(UUID gameId) {
-        return gameDao.getGameById(gameId).getStatus();
+        return getGameById(gameId).getStatus();
     }
 
     public Set<CellPosition> getPossibleMoves(UUID gameId) {
@@ -66,6 +75,8 @@ public class GameServiceImpl implements GameService {
     }
 
 
+
+
     boolean hasPlayer(Game game, UUID playerId) {
         Set<UUID> players = game.getPlayerIds();
         return players.contains(playerId);
@@ -77,12 +88,20 @@ public class GameServiceImpl implements GameService {
 
 
     public Token getCurrentPlayerToken(UUID gameId){
-        Game game =  gameDao.getGameById(gameId);
+        Game game =  getGameById(gameId);
         UUID currentPlayerId = game.getCurrentPlayerId();
 
         // Extract and compare UUID
         // Get the first matching token
         // Return null if no match is found
+        return game.getRemainingTokens().stream()
+                .filter(token -> token.getOwnerId().isPresent() && token.getOwnerId().get().equals(currentPlayerId)) // Extract and compare UUID
+                .findFirst() // Get the first matching token
+                .orElse(null);
+    }
+
+    public Token getCurrentPlayerToken(Game game){
+        UUID currentPlayerId = game.getCurrentPlayerId();
         return game.getRemainingTokens().stream()
                 .filter(token -> token.getOwnerId().isPresent() && token.getOwnerId().get().equals(currentPlayerId)) // Extract and compare UUID
                 .findFirst() // Get the first matching token
