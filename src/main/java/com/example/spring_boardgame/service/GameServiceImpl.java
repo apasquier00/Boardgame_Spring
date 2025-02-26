@@ -1,16 +1,14 @@
 package com.example.spring_boardgame.service;
 
+import com.example.spring_boardgame.data.repository.dao.Convertor;
 import com.example.spring_boardgame.data.repository.dao.GameDao;
-import com.example.spring_boardgame.data.repository.dao.JpaGameDao;
+import com.example.spring_boardgame.data.repository.entity.GameEntity;
 import fr.le_campus_numerique.square_games.engine.*;
-import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Service
@@ -19,6 +17,8 @@ public class GameServiceImpl implements GameService {
     @Qualifier("jpaGameDao")
     @Autowired
     GameDao gameDao;
+    @Autowired
+    private Convertor convertor;
 
 
     public CellPosition play(UUID playerId, int x, int y, UUID gameId) throws Exception {
@@ -27,10 +27,31 @@ public class GameServiceImpl implements GameService {
         }
         CellPosition cellPosition = new CellPosition(x, y);
         Game game = getGameById(gameId);
-        // Déplacer le jeton
-        getCurrentPlayerToken(game).moveTo(cellPosition);
-        // Mettre a jour la BDD
+        if (game.getFactoryId().equals("15 puzzle")){
+            Collection<Token> tokens = game.getBoard().values(); // Récupère tous les tokens
+            int i = 0;
+
+            for (Token token : tokens) {
+                if (cellPosition.equals(token.getPosition())){
+                    try {
+                        CellPosition targetPosition = token.getAllowedMoves().stream().findFirst().orElse(null);
+                        if (targetPosition != null) {
+                            token.moveTo(targetPosition);
+                        }
+                    } catch (Exception e) {
+                        return null;
+                    }
+                }
+            }
+
+        }else {
+            // Déplacer le jeton
+            getCurrentPlayerToken(game).moveTo(cellPosition);
+            // Mettre à jour la BDD
+
+        }
         gameDao.upsert(game);
+        printGame(game);
         return (cellPosition);
     }
 
@@ -60,7 +81,25 @@ public class GameServiceImpl implements GameService {
     }
 
     public Set<CellPosition> getPossibleMoves(UUID gameId) {
-        return  getCurrentPlayerToken(gameId).getAllowedMoves();
+        Game game = getGameById(gameId);
+        if (game.getFactoryId().equals("15 puzzle")){
+            Collection<Token> tokens = game.getBoard().values(); // Récupère tous les tokens
+            System.out.println(tokens);
+
+            Set<CellPosition> playableTokenPositions = new HashSet<>();
+
+            for (Token token : tokens) {
+                if (!token.getAllowedMoves().isEmpty()) { // Vérifie si le token peut jouer
+                    playableTokenPositions.add(token.getPosition()); // Ajoute sa position
+                }
+            }
+
+            return playableTokenPositions;
+
+
+
+        }
+        else return  getCurrentPlayerToken(getGameById(gameId)).getAllowedMoves();
     }
 
 
@@ -71,7 +110,7 @@ public class GameServiceImpl implements GameService {
 
     private Stream<Game> filterByStatus(String status, Stream<Game> games) {
         if (status == null) return games;
-        return games.filter(game -> status.equals(game.getStatus().name()));
+        return games.filter(game -> status.equalsIgnoreCase(game.getStatus().name()));
     }
 
 
@@ -87,25 +126,21 @@ public class GameServiceImpl implements GameService {
     }
 
 
-    public Token getCurrentPlayerToken(UUID gameId){
-        Game game =  getGameById(gameId);
-        UUID currentPlayerId = game.getCurrentPlayerId();
 
-        // Extract and compare UUID
-        // Get the first matching token
-        // Return null if no match is found
+    public Token getCurrentPlayerToken(Game game){
+        UUID currentPlayerId = game.getCurrentPlayerId();
+        System.out.println(currentPlayerId);
         return game.getRemainingTokens().stream()
                 .filter(token -> token.getOwnerId().isPresent() && token.getOwnerId().get().equals(currentPlayerId)) // Extract and compare UUID
                 .findFirst() // Get the first matching token
                 .orElse(null);
     }
 
-    public Token getCurrentPlayerToken(Game game){
-        UUID currentPlayerId = game.getCurrentPlayerId();
-        return game.getRemainingTokens().stream()
-                .filter(token -> token.getOwnerId().isPresent() && token.getOwnerId().get().equals(currentPlayerId)) // Extract and compare UUID
-                .findFirst() // Get the first matching token
-                .orElse(null);
+    void printGame(Game game) {
+        GameEntity gameEntity = convertor.GameToGameEntity(game);
+
+        System.out.println(convertor.convertToBoardString(gameEntity));
+
     }
 
 }

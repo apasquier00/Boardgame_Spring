@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class Convertissor {
+public class Convertor {
     GameFactory gameFactory;
 
 
@@ -70,7 +70,7 @@ public class Convertissor {
     Game GameEntityToGame(GameEntity gameEntity) {
         switch (gameEntity.getFactoryId()) {
             case"tictactoe": gameFactory = new TicTacToeGameFactory(); break;
-            case"15 puzzles":gameFactory = new TaquinGameFactory(); break;
+            case"15 puzzle":gameFactory = new TaquinGameFactory(); break;
             case"connect4":gameFactory = new ConnectFourGameFactory(); break;
         }
         Collection<TokenPosition<UUID>> removedTokens = new ArrayList<>();
@@ -101,7 +101,7 @@ public class Convertissor {
     TokenPosition<UUID> convertTokenEntityToPosition(GameTokenEntity tokenEntity){
         Optional<Integer> x = Optional.ofNullable(tokenEntity.getX());
         Optional<Integer> y = Optional.ofNullable(tokenEntity.getY());
-        return new TokenPosition(
+        return new TokenPosition<>(
                 tokenEntity.getOwnerId(),
                 tokenEntity.getName(),
                 x.orElse(-1),
@@ -116,4 +116,41 @@ public class Convertissor {
                 .collect(Collectors.toList()); // Collecter en une liste
     }
 
+
+    public String convertToBoardString(GameEntity game) {
+        int boardSize = game.getBoardSize();
+        char[][] board = new char[boardSize][boardSize];
+
+        // Remplir le plateau avec des espaces vides
+        for (int i = 0; i < boardSize; i++) {
+            Arrays.fill(board[i], '.'); // '.' représente une case vide
+        }
+
+        // Placer les tokens sur le plateau avec leur nom
+        for (GameTokenEntity token : game.getTokens()) {
+            if (token.getX() != null && token.getY() != null) {
+                int x = token.getX();
+                int y = token.getY();
+
+                // Vérification des limites du plateau
+                if (x >= 0 && x < boardSize && y >= 0 && y < boardSize) {
+                    // Utilisation du nom complet ou première lettre si nécessaire
+                    String tokenName = token.getName();
+                    if (tokenName.length() > 1) {
+                        board[y][x] = tokenName.charAt(0);  // Placer la première lettre
+                    } else {
+                        board[y][x] = tokenName.charAt(0);  // Si c'est un nom court, afficher directement
+                    }
+                }
+            }
+        }
+
+        // Construire la représentation sous forme de String
+        StringBuilder boardString = new StringBuilder();
+        for (char[] row : board) {
+            boardString.append(new String(row)).append("\n");
+        }
+
+        return boardString.toString();
+    }
 }

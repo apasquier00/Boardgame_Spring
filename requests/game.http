@@ -1,9 +1,9 @@
 ###
 @url=http://localhost:8081
 @game=ticTacToe
-@user_id=256eee58-a1bd-4ef4-80e9-79530b9b3fba
+@user_id=102f7d68-3d3e-4aae-a45c-17f4f804dc41
 @user_id2=a2b082a0-30a9-4911-924c-c840443fdf9e
-@game_id=26bfdb64-aff2-4e3e-8611-e91d97077956
+@game_id=070265cc-2622-4d1c-b617-acb224f38627
 
 ### GET request to example server
 GET https://examples.http-client.intellij.net/get
@@ -47,6 +47,6 @@ X-UserId: {{user_id}}
 Content-Type: application/json
 
 {
-  "x": 0,
-  "y": -1
+  "x": 1,
+  "y": 3
 }
