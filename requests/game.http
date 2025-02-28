@@ -1,9 +1,9 @@
 ###
 @url=http://localhost:8081
 @game=ticTacToe
-@user_id=102f7d68-3d3e-4aae-a45c-17f4f804dc41
-@user_id2=a2b082a0-30a9-4911-924c-c840443fdf9e
-@game_id=070265cc-2622-4d1c-b617-acb224f38627
+@user_id=58300e77-3581-4fff-8fbb-943c2add0be1
+@user_id2=dabd3e13-1f7b-4714-a2db-d3013a9a3498
+@game_id=ad9b579c-ed22-4cf2-b886-d676892bbadf
 
 ### GET request to example server
 GET https://examples.http-client.intellij.net/get
@@ -11,6 +11,11 @@ GET https://examples.http-client.intellij.net/get
 
 ### GET catalog
 GET {{url}}/catalog
+
+### GET game name
+GET {{url}}/catalog/gameType/tictactoe
+Language: EN
+
 
 ### POST new game
 POST {{url}}/games
@@ -32,6 +37,9 @@ GET {{url}}/games/{{game_id}}
 ### GET game by status
 GET {{url}}/games?status=ongoing
 
+### GET stats
+GET {{url}}/games/stats
+
 
 ### GET games by playerId
 GET {{url}}/games
@@ -47,6 +55,6 @@ X-UserId: {{user_id}}
 Content-Type: application/json
 
 {
-  "x": 1,
-  "y": 3
+  "x": 0,
+  "y": 0
 }

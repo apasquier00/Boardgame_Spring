@@ -1,5 +1,6 @@
 package com.example.spring_boardgame.data.repository.dao;
 
+import com.example.spring_boardgame.controller.GameDataDto;
 import com.example.spring_boardgame.data.repository.entity.GameEntity;
 import com.example.spring_boardgame.data.repository.entity.GameTokenEntity;
 import fr.le_campus_numerique.square_games.engine.*;
@@ -152,5 +153,19 @@ public class Convertor {
         }
 
         return boardString.toString();
+    }
+
+    public GameDataDto convertToGameDataModel(Game game){
+
+        UUID winnerId = null;
+        UUID loserId = null;
+        winnerId = game.getCurrentPlayerId();
+        for (UUID playerId : game.getPlayerIds()) {
+            if (!playerId.equals(winnerId)) {
+                loserId = playerId;
+                break;
+            }
+        }
+        return new GameDataDto(game.getId(), game.getFactoryId(), winnerId, loserId);
     }
 }

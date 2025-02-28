@@ -1,5 +1,6 @@
 package com.example.spring_boardgame.service;
 
+import com.example.spring_boardgame.controller.GameDataDto;
 import com.example.spring_boardgame.data.repository.dao.Convertor;
 import com.example.spring_boardgame.data.repository.dao.GameDao;
 import com.example.spring_boardgame.data.repository.entity.GameEntity;
@@ -7,12 +8,15 @@ import fr.le_campus_numerique.square_games.engine.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
 public class GameServiceImpl implements GameService {
+    RestClient restClient = RestClient.builder().build();
 
     @Qualifier("jpaGameDao")
     @Autowired
@@ -52,6 +56,7 @@ public class GameServiceImpl implements GameService {
         }
         gameDao.upsert(game);
         printGame(game);
+        postStats();
         return (cellPosition);
     }
 
@@ -116,18 +121,18 @@ public class GameServiceImpl implements GameService {
 
 
 
-    boolean hasPlayer(Game game, UUID playerId) {
+    private boolean hasPlayer(Game game, UUID playerId) {
         Set<UUID> players = game.getPlayerIds();
         return players.contains(playerId);
     }
 
-    boolean isCurrentPlayer(Game game, UUID playerId) {
+    private boolean isCurrentPlayer(Game game, UUID playerId) {
         return game.getCurrentPlayerId().equals(playerId);
     }
 
 
 
-    public Token getCurrentPlayerToken(Game game){
+    private Token getCurrentPlayerToken(Game game){
         UUID currentPlayerId = game.getCurrentPlayerId();
         System.out.println(currentPlayerId);
         return game.getRemainingTokens().stream()
@@ -136,11 +141,25 @@ public class GameServiceImpl implements GameService {
                 .orElse(null);
     }
 
-    void printGame(Game game) {
+    private void printGame(Game game) {
         GameEntity gameEntity = convertor.GameToGameEntity(game);
 
         System.out.println(convertor.convertToBoardString(gameEntity));
 
+    }
+
+
+    public void postStats(){
+        Stream<Game> games = getGames("TERMINATED", null);
+        List<GameDataDto> datas = games
+                .map(convertor::convertToGameDataModel) // Utilisation de method reference pour simplifier
+                .collect(Collectors.toList()); // Collecter en liste
+        System.out.println("datas : " +datas);
+        restClient.post()
+                .uri("http://localhost:8080/stats")
+                .body(datas) // Utilisation correcte de body()
+                .retrieve()
+                .toBodilessEntity();
     }
 
 }

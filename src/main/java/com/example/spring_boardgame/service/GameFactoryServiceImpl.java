@@ -2,6 +2,8 @@ package com.example.spring_boardgame.service;
 
 import com.example.spring_boardgame.data.repository.dao.GameDao;
 import com.example.spring_boardgame.data.repository.dao.JpaGameDao;
+import com.example.spring_boardgame.plugin.GamePlugin;
+import com.example.spring_boardgame.plugin.TicTacToePlugin;
 import com.example.spring_boardgame.service.catalog.GameCatalog;
 import fr.le_campus_numerique.square_games.engine.Game;
 import fr.le_campus_numerique.square_games.engine.GameFactory;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,8 +28,14 @@ public class GameFactoryServiceImpl implements GameFactoryService {
         this.gameDao = jpaGameDao;
     }
 
+    public String getName(Locale language) {
+        return "";
+
+    }
+
     public Game createGame(int boardSize, UUID playerId, String gameName, int playerCount) {
-        Set<UUID> users = fillRandomUsers(playerCount, playerId).collect(Collectors.toSet());
+
+                Set<UUID> users = fillRandomUsers(playerCount, playerId).collect(Collectors.toSet());
         GameFactory factory = catalog.getGameFactoryById(gameName);
         if (factory == null) {
             return null;

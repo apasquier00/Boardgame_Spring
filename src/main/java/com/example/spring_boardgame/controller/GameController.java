@@ -1,7 +1,7 @@
 package com.example.spring_boardgame.controller;
 
-import com.example.spring_boardgame.service.GameFactoryServiceImpl;
-import com.example.spring_boardgame.service.GameServiceImpl;
+import com.example.spring_boardgame.service.GameFactoryService;
+import com.example.spring_boardgame.service.GameService;
 import fr.le_campus_numerique.square_games.engine.CellPosition;
 import fr.le_campus_numerique.square_games.engine.Game;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +20,12 @@ public class GameController {
 
     RestClient restClient = RestClient.builder().build();
 
+
     @Autowired
-    private GameFactoryServiceImpl gameFactoryService;
+    private GameFactoryService gameFactoryService;
     @Autowired
-    private GameServiceImpl gameService;
+    private GameService gameService;
+
 
 
     @PostMapping("/games")
@@ -33,6 +35,7 @@ public class GameController {
             System.out.println("ACCES REFUSE");
             return null;
         }
+
         Game game = gameFactoryService.createGame(params.boardSize(), playerId, params.gameType(), params.playerCount());
         return convertToDto(game);
     }
